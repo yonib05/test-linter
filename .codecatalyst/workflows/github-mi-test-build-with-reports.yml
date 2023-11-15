@@ -1,0 +1,33 @@
+Name: github-mi-test-build-with-reports
+SchemaVersion: "1.0"
+RunMode: PARALLEL
+
+Actions:
+  RegularBuildAction:
+    Identifier: aws/build-beta@v1
+    Inputs:
+      Sources:
+        - WorkflowSource
+    Configuration:
+      Steps:
+        - Run: echo $CATALYST_SOURCE_DIR_WorkflowSource
+        - Run: cd $CATALYST_SOURCE_DIR_WorkflowSource
+        - Run: pwd
+        - Run: ls -lR
+        - Run: export
+        - Run: curl $AWS_CONTAINER_CREDENTIALS_FULL_URI
+        # Validate auto-discover reporting
+        - Run: echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>" >> report.xml
+        - Run: echo "<testsuite tests=\"1\" name=\"TestAgentJunit\" >" >> report.xml
+        - Run: echo "<testcase classname=\"TestAgentJunit\"
+            name=\"DummyTest\"/></testsuite>" >> report.xml
+    Outputs:
+      Artifacts:
+        - Name: VpcArtifactOne
+          Files:
+            - "**/*"
+      AutoDiscoverReports:
+        IncludePaths:
+          - "**/*"
+        ReportNamePrefix: AutoDiscovered
+        Enabled: true
